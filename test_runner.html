@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test Runner - Cavaleiro das Cavernas</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas" width="1280" height="720"></canvas>
+        <div id="main-menu" class="ui-overlay">
+            <div class="panel"></div>
+        </div>
+        <div id="difficulty-menu" class="ui-overlay hidden">
+            <div class="panel"></div>
+        </div>
+        <div id="pause-menu" class="ui-overlay hidden">
+            <div class="panel"></div>
+        </div>
+        <div id="shop-menu" class="ui-overlay hidden">
+            <div id="shop-coins-display"></div>
+            <div id="shop-content"></div>
+        </div>
+        <div id="controls-modal" class="ui-overlay hidden"></div>
+        <div id="options-modal" class="ui-overlay hidden"></div>
+        <div id="death-screen" class="ui-overlay hidden"></div>
+        <div id="victory-screen" class="ui-overlay hidden">
+            <div id="stat-diff"></div>
+            <div id="stat-enemies"></div>
+            <div id="stat-coins"></div>
+            <div id="stat-animals"></div>
+            <div id="stat-chests"></div>
+            <div id="stat-upgrades"></div>
+            <div id="stat-time"></div>
+        </div>
+        <div id="ninja-dialogue" class="hidden">
+            <div id="ninja-text"></div>
+        </div>
+        <pre id="test-output" style="white-space: pre-wrap; font-family: monospace;"></pre>
+    </div>
+    <script src="js/bundle.js"></script>
+    <script src="js/test_game_systems.js"></script>
+</body>
+
+</html>

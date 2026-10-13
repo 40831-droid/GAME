@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cavaleiro das Cavernas - Jogo 2D Medieval Dark Fantasy</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Canvas Principal de Renderização 2D -->
+        <canvas id="game-canvas" width="1280" height="720"></canvas>
+
+        <!-- 1. Menu Principal -->
+        <div id="main-menu" class="ui-overlay">
+            <div class="panel">
+                <h1 class="game-title">CAVALEIRO DAS CAVERNAS</h1>
+                <p class="subtitle">Uma jornada sombria através de 34 fases nas profundezas medievais</p>
+                <div class="btn-list">
+                    <button id="btn-play" class="btn-medieval">JOGAR</button>
+                    <button id="btn-continue" class="btn-medieval" disabled>CONTINUAR</button>
+                    <button id="btn-new-game" class="btn-medieval">NOVO JOGO</button>
+                    <button id="btn-options" class="btn-medieval">OPÇÕES</button>
+                    <button id="btn-controls" class="btn-medieval">CONTROLES</button>
+                    <button id="btn-credits" class="btn-medieval">SOBRE O JOGO</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Seleção de Dificuldade -->
+        <div id="difficulty-menu" class="ui-overlay hidden">
+            <div class="panel">
+                <h2 class="panel-title">ESCOLHA A DIFICULDADE</h2>
+                <p class="subtitle">Selecione o nível de desafio antes de adentrar as profundezas</p>
+                <div class="difficulty-grid">
+                    <div class="diff-card" data-diff="pacifica">
+                        <div class="diff-name">🕊️ PACÍFICA</div>
+                        <div class="diff-sub">"Para quem quer explorar sem medo." — Inimigos fracos, recursos fartos, recuperação rápida.</div>
+                    </div>
+                    <div class="diff-card" data-diff="facil">
+                        <div class="diff-name">🟢 FÁCIL</div>
+                        <div class="diff-sub">"Uma aventura acessível." — Inimigos moderados, dano reduzido, progressão amigável.</div>
+                    </div>
+                    <div class="diff-card selected" data-diff="media">
+                        <div class="diff-name">🟡 MÉDIA</div>
+                        <div class="diff-sub">"A experiência recomendada." — Desafio e combate equilibrados. A experiência padrão.</div>
+                    </div>
+                    <div class="diff-card" data-diff="alta">
+                        <div class="diff-name">🔴 ALTA</div>
+                        <div class="diff-sub">"Para cavaleiros experientes." — Inimigos letais, menos moedas, armadura se desgasta rápido.</div>
+                    </div>
+                    <div class="diff-card" data-diff="impossivel">
+                        <div class="diff-name">☠️ IMPOSSÍVEL</div>
+                        <div class="diff-sub">"Você provavelmente vai morrer." — Brutalidade absoluta para os mestres do combate.</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 14px; justify-content: center; margin-top: 15px;">
+                    <button id="btn-start-game" class="btn-medieval">INICIAR JORNADA</button>
+                    <button id="btn-back-difficulty" class="btn-medieval" style="background: #222;">VOLTAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Menu de Pausa -->
+        <div id="pause-menu" class="ui-overlay hidden">
+            <div class="panel">
+                <h2 class="panel-title">JOGO PAUSADO</h2>
+                <div class="btn-list">
+                    <button id="btn-resume" class="btn-medieval">CONTINUAR</button>
+                    <button id="btn-pause-options" class="btn-medieval">OPÇÕES</button>
+                    <button id="btn-pause-controls" class="btn-medieval">CONTROLES</button>
+                    <button id="btn-quit-menu" class="btn-medieval">VOLTAR AO MENU</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Loja do Mercador & Forja de Upgrades -->
+        <div id="shop-menu" class="ui-overlay hidden">
+            <div class="panel" style="max-width: 900px;">
+                <h2 class="panel-title">MERCADOR DAS PROFUNDEZAS</h2>
+                <p id="shop-coins-display" style="color: #f1c40f; font-weight: bold; margin-bottom: 12px;">SUAS MOEDAS: 0 💰</p>
+                <div class="shop-tabs">
+                    <button class="tab-btn active" data-tab="armors">🛡️ ARMADURAS</button>
+                    <button class="tab-btn" data-tab="shields">🔰 ESCUDOS</button>
+                    <button class="tab-btn" data-tab="swords">⚔️ ESPADAS</button>
+                    <button class="tab-btn" data-tab="upgrades">⚡ ATRIBUTOS</button>
+                    <button class="tab-btn" data-tab="supplies">🧪 PROVISÕES</button>
+                </div>
+                <div id="shop-content" class="shop-items-grid">
+                    <!-- Preenchido dinamicamente via ShopUI.js -->
+                </div>
+                <div style="margin-top: 20px;">
+                    <button id="btn-close-shop" class="btn-medieval">FECHAR LOJA [ESC / E]</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Modal de Controles -->
+        <div id="controls-modal" class="ui-overlay hidden">
+            <div class="panel">
+                <h2 class="panel-title">CONTROLES DO CAVALEIRO</h2>
+                <table class="stats-table">
+                    <tr><td>A / D</td><td>Mover Cavaleiro</td></tr>
+                    <tr><td>W ou ESPAÇO</td><td>Pular / Pulo Duplo</td></tr>
+                    <tr><td>MOUSE ESQUERDO ou J</td><td>Atacar com Espada</td></tr>
+                    <tr><td>MOUSE DIREITO, SHIFT ou K</td><td>Defender com Escudo / Esquiva</td></tr>
+                    <tr><td>E</td><td>Interagir (Baús, Animais, Mercador, Portal)</td></tr>
+                    <tr><td>Q ou 1</td><td>Usar Poção de Cura</td></tr>
+                    <tr><td>ESC</td><td>Pausar Jogo</td></tr>
+                </table>
+                <button id="btn-close-controls" class="btn-medieval" style="margin-top: 15px;">ENTENDIDO</button>
+            </div>
+        </div>
+
+        <!-- 6. Modal de Opções de Áudio -->
+        <div id="options-modal" class="ui-overlay hidden">
+            <div class="panel">
+                <h2 class="panel-title">OPÇÕES DE ÁUDIO</h2>
+                <div style="display: flex; flex-direction: column; gap: 20px; margin: 25px 0;">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>VOLUME GERAL</span>
+                        <input id="volume-slider" type="range" min="0" max="1" step="0.05" value="0.7" style="width: 200px; accent-color: #d4af37;">
+                    </label>
+                    <button id="btn-toggle-mute" class="btn-medieval">SILENCIAR ÁUDIO: NÃO</button>
+                </div>
+                <button id="btn-close-options" class="btn-medieval">SALVAR E VOLTAR</button>
+            </div>
+        </div>
+
+        <!-- 7. Tela de Morte -->
+        <div id="death-screen" class="ui-overlay hidden">
+            <div class="panel">
+                <h1>VOCÊ MORREU</h1>
+                <p class="subtitle">As sombras da caverna reclamaram seu espírito...</p>
+                <div class="btn-list">
+                    <button id="btn-death-retry" class="btn-medieval">TENTAR NOVAMENTE</button>
+                    <button id="btn-death-checkpoint" class="btn-medieval">VOLTAR AO ÚLTIMO CHECKPOINT</button>
+                    <button id="btn-death-menu" class="btn-medieval">VOLTAR AO MENU PRINCIPAL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Tela de Vitória Final (Fase 34 Completa) -->
+        <div id="victory-screen" class="ui-overlay hidden">
+            <div class="panel">
+                <h1>VOCÊ SOBREVIVEU!</h1>
+                <p class="final-quote">"A caverna ficou para trás... mas as trevas ainda existem."</p>
+                <h3 style="color: #e5c158; margin: 15px 0;">ESTATÍSTICAS DA SUA JORNADA</h3>
+                <table class="stats-table">
+                    <tr><td>Fases Concluídas:</td><td>34 / 34</td></tr>
+                    <tr><td>Dificuldade:</td><td id="stat-diff">MÉDIA</td></tr>
+                    <tr><td>Inimigos Derrotados:</td><td id="stat-enemies">0</td></tr>
+                    <tr><td>Moedas Coletadas:</td><td id="stat-coins">0</td></tr>
+                    <tr><td>Animais Libertados:</td><td id="stat-animals">0</td></tr>
+                    <tr><td>Baús Abertos:</td><td id="stat-chests">0</td></tr>
+                    <tr><td>Melhorias Adquiridas:</td><td id="stat-upgrades">0</td></tr>
+                    <tr><td>Tempo Total:</td><td id="stat-time">00:00</td></tr>
+                </table>
+                <button id="btn-victory-menu" class="btn-medieval" style="margin-top: 20px;">RETORNAR AO MENU PRINCIPAL</button>
+            </div>
+        </div>
+
+        <!-- 9. Notificação / Fala da Mulher Ninja Espiã -->
+        <div id="ninja-dialogue" class="hidden" style="position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(18, 14, 26, 0.95); border: 2px solid #8e44ad; border-radius: 6px; padding: 14px 28px; z-index: 90; text-align: center; box-shadow: 0 0 25px rgba(142, 68, 173, 0.6);">
+            <div style="color: #c084fc; font-weight: bold; font-size: 0.9rem; margin-bottom: 4px;">MULHER MISTERIOSA</div>
+            <div id="ninja-text" style="color: #ffffff; font-size: 1.1rem; font-style: italic;">"Você vai precisar disso."</div>
+        </div>
+    </div>
+
+    <!-- Script do Jogo (Bundle com suporte a execução direta file:// ou servidor HTTP) -->
+    <script src="js/bundle.js"></script>
+</body>
+</html>
